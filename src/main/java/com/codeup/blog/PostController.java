@@ -1,54 +1,61 @@
 package com.codeup.blog;
 
+import com.codeup.blog.repositories.PostRepositories;
+import com.codeup.blog.repositories.UserRepositories;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 
 @Controller
 public class PostController {
+    private final PostRepositories postDao;
+    private final UserRepositories userDao;
 
-
-
-    @GetMapping("/posts")
-    public String index(Model model){
-        List<Post> aListOfPosts = makeSomePost();
-        model.addAttribute("posts", aListOfPosts);
-        return "posts/index";
+    public PostController(PostRepositories postDao, UserRepositories userDao){
+        this.postDao = postDao;
+        this.userDao = userDao;
     }
 
+    //All posts
+    @GetMapping("/posts")
+    public String index(Model model){
+//        List<Post> aListOfPosts = postDao.findAllPosts();
+        model.addAttribute("posts", postDao.findAll());
+        return "posts/index";
+    }
+    //Individual post
     @GetMapping("/posts/{id}")
     public String showDetails(@PathVariable long id, Model model){
-        Post post = new Post("Best Title", "Best Body", id);
-        model.addAttribute("post", post);
+        model.addAttribute("post", postDao.findOne(id));
         return "posts/show";
     }
 
-    @GetMapping("/posts/id/edit")
-    public @ResponseBody String edit(@PathVariable long id){
-        return "View the form for editing posts= #" + id;
+    @GetMapping("/posts/{id}/edit")
+    public String edit(@PathVariable long id, Model model){
+//        return "View the form for editing posts= #" + id;
+        model.addAttribute("post", postDao.findOne(id));
+
+        return "posts/edit";
     }
+
 
 
     @GetMapping("/posts/create")
-    public @ResponseBody String viewCreate(){
-        return "view the form for creating a post";
+    public String viewCreate(Model model){
+        model.addAttribute("post", new Post());
+        return "posts/create";
     }
+
 
     @PostMapping("/posts/create")
-    public @ResponseBody String savePost(){
-        return"Create a new posts";
+    public String savePost(@ModelAttribute Post post){
+        User user = userDao.findOne(1L);
+        post.setUser(user);
+        postDao.save(post);
+        return "redirect:/posts";
+
     }
 
-    private List<Post> makeSomePost(){
-        return Arrays.asList(
-                new Post("The Haunting", "Deez nuts"),
-                new Post("I'm hungry", "for deez")
-        );
-    }
 
 }

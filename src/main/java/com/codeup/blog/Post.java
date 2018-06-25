@@ -5,11 +5,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@Service
+import javax.persistence.*;
+
+@Entity
+@Table(name="posts")
 public class Post {
-    private String title;
-    private String body;
+    @Id
+    @GeneratedValue
     private Long id;
+
+    @Column(nullable = false, length = 100)
+    private String title;
+
+    @Column(nullable=false)
+    private String body;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public String getTitle() {
         return title;
@@ -36,10 +49,10 @@ public class Post {
 
     }
 
-    public Post(String title, String body, Long id){
+    public Post(Long id, String title, String body){
+        this.id = id;
         this.title = title;
         this.body = body;
-        this.id = id;
     }
 
     public Long getId() {
@@ -48,5 +61,13 @@ public class Post {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
