@@ -1,9 +1,4 @@
-package com.codeup.blog;
-
-import com.sun.tools.javac.util.List;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
+package com.codeup.blog.models;
 
 import javax.persistence.*;
 

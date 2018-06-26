@@ -1,7 +1,10 @@
-package com.codeup.blog;
+package com.codeup.blog.controllers;
 
+import com.codeup.blog.models.Post;
+import com.codeup.blog.models.User;
 import com.codeup.blog.repositories.PostRepositories;
 import com.codeup.blog.repositories.UserRepositories;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
@@ -9,6 +12,8 @@ import org.springframework.ui.Model;
 
 @Controller
 public class PostController {
+
+
     private final PostRepositories postDao;
     private final UserRepositories userDao;
 
@@ -39,6 +44,12 @@ public class PostController {
         return "posts/edit";
     }
 
+    @PostMapping("/posts/{id}/edit")
+    public String updatePost(@PathVariable long id, @ModelAttribute Post post){
+        postDao.save(post);
+        return "redirect:/posts/";
+    }
+
 
 
     @GetMapping("/posts/create")
@@ -50,12 +61,21 @@ public class PostController {
 
     @PostMapping("/posts/create")
     public String savePost(@ModelAttribute Post post){
-        User user = userDao.findOne(1L);
+//        User user = userDao.findOne(1L);
+        User userSession = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDao.findOne(userSession.getId());
         post.setUser(user);
         postDao.save(post);
         return "redirect:/posts";
 
     }
+
+    @PostMapping("/posts/{id}/delete")
+    public String delete(@PathVariable long id){
+        postDao.delete(id);
+        return "redirect:/posts";
+    }
+
 
 
 }

@@ -1,5 +1,7 @@
-package com.codeup.blog;
+package com.codeup.blog.models;
 
+
+import com.codeup.blog.models.Post;
 
 import javax.persistence.*;
 import java.util.List;
@@ -21,8 +23,8 @@ public class User {
     private String password;
 
 
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "posts")
-//    private List<Post> posts;
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 
     public User(){}
 
@@ -37,6 +39,13 @@ public class User {
         this.username = username;
         this.email = email;
         this.password = password;
+    }
+
+    public User(User copy) {
+        id = copy.id; // This line is SUPER important! Many things won't work if it's absent
+        email = copy.email;
+        username = copy.username;
+        password = copy.password;
     }
 
 
